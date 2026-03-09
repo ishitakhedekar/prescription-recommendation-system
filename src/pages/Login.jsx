@@ -1,94 +1,126 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import API from '../api/axios'
 
 const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [userType, setUserType] = useState('patient')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    // Handle login logic here
-    if (userType === 'patient') {
-      navigate('/patient-dashboard')
-    } else if (userType === 'doctor') {
-      navigate('/doctor-dashboard')
-    } else {
-      navigate('/admin-dashboard')
+    setError('')
+    setLoading(true)
+    try {
+      const res = await API.post('/auth/login', { email, password })
+      const { token, user } = res.data
+      login(user, token)
+      if (user.role === 'patient') navigate('/patient-dashboard')
+      else if (user.role === 'doctor') navigate('/doctor-dashboard')
+      else if (user.role === 'admin') navigate('/admin-dashboard')
+    } catch (err) {
+      setError(err.response?.data?.message || 'Login failed. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex" style={{ fontFamily: "'Georgia', serif" }}>
+      {/* Left panel */}
+      <div className="hidden lg:flex lg:w-1/2 bg-blue-700 flex-col justify-between p-12">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Sign in to your account
-          </h2>
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+              <span className="text-blue-700 text-xl">🏥</span>
+            </div>
+            <span className="text-white text-xl font-bold tracking-wide">MediScript</span>
+          </div>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
+        <div className="space-y-6">
+          <h1 className="text-5xl font-bold text-white leading-tight">
+            Digital Prescriptions.<br />
+            <span className="text-blue-200">Simplified.</span>
+          </h1>
+          <p className="text-blue-200 text-lg leading-relaxed">
+            Manage patient prescriptions, medical history, and healthcare workflows — all in one secure platform.
+          </p>
+          <div className="flex space-x-8 pt-4">
             <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
+              <p className="text-3xl font-bold text-white">500+</p>
+              <p className="text-blue-300 text-sm">Doctors</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-white">10k+</p>
+              <p className="text-blue-300 text-sm">Patients</p>
+            </div>
+            <div>
+              <p className="text-3xl font-bold text-white">50k+</p>
+              <p className="text-blue-300 text-sm">Prescriptions</p>
+            </div>
+          </div>
+        </div>
+        <p className="text-blue-400 text-sm">© 2026 MediScript. All rights reserved.</p>
+      </div>
+
+      {/* Right panel */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gray-50 px-8">
+        <div className="w-full max-w-md">
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
+            <p className="text-gray-500 mt-2">Sign in to your account to continue</p>
+          </div>
+
+          {error && (
+            <div className="mb-6 bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-r">
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Email address</label>
               <input
-                id="email-address"
-                name="email"
                 type="email"
-                autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                placeholder="you@example.com"
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
               <input
-                id="password"
-                name="password"
                 type="password"
-                autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                placeholder="••••••••"
               />
             </div>
-          </div>
 
-          <div>
-            <label htmlFor="user-type" className="block text-sm font-medium text-gray-700">
-              User Type
-            </label>
-            <select
-              id="user-type"
-              name="user-type"
-              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              value={userType}
-              onChange={(e) => setUserType(e.target.value)}
-            >
-              <option value="patient">Patient</option>
-              <option value="doctor">Doctor</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
-
-          <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 disabled:opacity-50 mt-2"
             >
-              Sign in
+              {loading ? 'Signing in...' : 'Sign in'}
             </button>
-          </div>
-        </form>
+          </form>
+
+          <p className="mt-8 text-center text-sm text-gray-500">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-blue-700 font-semibold hover:underline">
+              Create one here
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   )
