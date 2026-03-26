@@ -6,6 +6,7 @@ const doctorMenu = [
   { name: 'Dashboard', path: '/doctor-dashboard', icon: '📊' },
   { name: 'My Patients', path: '/doctor/patients', icon: '👥' },
   { name: 'Prescriptions', path: '/doctor/prescriptions', icon: '📋' },
+  { name: 'Drug Checker', path: '/doctor/drug-checker', icon: '💊' }, 
   { name: 'My Profile', path: '/profile', icon: '👤' },
 ]
 

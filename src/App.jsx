@@ -14,6 +14,7 @@ import AdminDashboard from './pages/AdminDashboard'
 
 import PatientHistory from './components/doctor/PatientHistory'
 import CreatePrescription from './components/doctor/CreatePrescription'
+import DrugInteractionChecker from './components/doctor/DrugInteractionChecker'
 import PrescriptionList from './components/patient/PrescriptionList'
 import OCRUpload from './components/patient/OCRUpload'
 import Teleconsultation from './components/patient/Teleconsultation'
@@ -42,6 +43,7 @@ function App() {
               {/* Doctor */}
               <Route path="/doctor-dashboard" element={<ProtectedRoute allowedRoles={['doctor']}><DoctorDashboard /></ProtectedRoute>} />
               <Route path="/doctor/patients" element={<ProtectedRoute allowedRoles={['doctor']}><PatientHistory /></ProtectedRoute>} />
+              <Route path="/doctor/drug-checker" element={<ProtectedRoute allowedRoles={['doctor']}><DrugInteractionChecker /></ProtectedRoute>} />
               <Route path="/doctor/prescriptions" element={<ProtectedRoute allowedRoles={['doctor']}><CreatePrescription /></ProtectedRoute>} />
 
               {/* Patient */}
